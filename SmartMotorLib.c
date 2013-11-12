@@ -33,6 +33,9 @@
 /*                      want to add a new variable so reused encoder_id        */
 /*               V1.04  27 June 2013                                           */
 /*                      Change license (added) to the Apache License           */
+/*               V1.05  11 Nov 2013                                            */
+/*                      Fix bug when speed limited and changing directions     */
+/*                      quickly.                                               */
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*    The author is supplying this software for use with the VEX cortex        */
@@ -104,8 +107,8 @@
 #ifndef __SMARTMOTORLIB__
 #define __SMARTMOTORLIB__
 
-// Version 1.03
-#define kSmartMotorLibVersion   104
+// Version 1.05
+#define kSmartMotorLibVersion   105
 
 // We make extensive use of pointers so need recent versions of ROBOTC
 #include "FirmwareVersion.h"
@@ -1793,8 +1796,13 @@ task SmartMotorSlewRateTask()
             // check for limiting
             if( (PtcLimitEnabled || CurrentLimitEnabled) && (m->limit_cmd != SMLIB_MOTOR_MAX_CMD_UNDEFINED) )
                 {
-                if( abs(m->motor_cmd) > abs(m->limit_cmd) )
-                    m->motor_req = m->limit_cmd;
+                if( abs(m->motor_cmd) > abs(m->limit_cmd) ) {
+                    // don't limit if we are reversing direction
+                    if( sgn(m->motor_cmd) == sgn(m->limit_cmd) )
+                        m->motor_req = m->limit_cmd;
+                    else
+                        m->motor_req = m->motor_cmd;
+                    }
                 else
                     m->motor_req = m->motor_cmd;
                 }
