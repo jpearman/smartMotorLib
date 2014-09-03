@@ -36,6 +36,8 @@
 /*               V1.05  11 Nov 2013                                            */
 /*                      Fix bug when speed limited and changing directions     */
 /*                      quickly.                                               */
+/*               V1.06  3 Sept 2014                                            */
+/*                      Added support for the 393 Turbo Gears and ROBOTC V4.26 */
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*    The author is supplying this software for use with the VEX cortex        */
@@ -108,7 +110,7 @@
 #define __SMARTMOTORLIB__
 
 // Version 1.05
-#define kSmartMotorLibVersion   105
+#define kSmartMotorLibVersion   106
 
 // We make extensive use of pointers so need recent versions of ROBOTC
 #include "FirmwareVersion.h"
@@ -165,6 +167,7 @@
 
 // encoder counts per revolution depending on motor
 #define SMLIB_TPR_269           240.448
+#define SMLIB_TPR_393R          261.333
 #define SMLIB_TPR_393S          392
 #define SMLIB_TPR_393T          627.2
 #define SMLIB_TPR_QUAD          360.0
@@ -888,6 +891,29 @@ SmartMotorsInit()
                 m->rpm_free = SMLIB_RPM_FREE_393 * 1.6;
 
                 m->ticks_per_rev = SMLIB_TPR_393S;
+
+                m->safe_current = SMLIB_I_SAFE393;
+
+                m->t_const_1 = SMLIB_C1_393;
+                m->t_const_2 = SMLIB_C2_393;
+                break;
+
+            // 393 set for Turbo
+#ifndef kRobotCHasPid
+            // ROBOTC V3.XX has not been updated yet
+            // case    tmotorVex393TurboSpeed:
+#else
+            case    tmotorVex393TurboSpeed_HBridge:
+            case    tmotorVex393TurboSpeed_MC29:
+#endif
+                m->i_free   = SMLIB_I_FREE_393;
+                m->i_stall  = SMLIB_I_STALL_393;
+                m->r_motor  = SMLIB_R_393;
+                m->l_motor  = SMLIB_L_393;
+                m->ke_motor = SMLIB_Ke_393/2.4;
+                m->rpm_free = SMLIB_RPM_FREE_393 * 2.4;
+
+                m->ticks_per_rev = SMLIB_TPR_393R;
 
                 m->safe_current = SMLIB_I_SAFE393;
 
