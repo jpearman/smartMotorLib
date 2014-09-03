@@ -40,6 +40,11 @@ A ROBOTC Library for the VEX cortex.
 /*                      want to add a new variable so reused encoder_id        */
 /*               V1.04  27 June 2013                                           */
 /*                      Change license (added) to the Apache License           */
+/*               V1.05  11 Nov 2013                                            */
+/*                      Fix bug when speed limited and changing directions     */
+/*                      quickly.                                               */
+/*               V1.06  3 Sept 2014                                            */
+/*                      Added support for the 393 Turbo Gears and ROBOTC V4.26 */
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*    The author is supplying this software for use with the VEX cortex        */
