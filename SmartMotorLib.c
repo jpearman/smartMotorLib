@@ -127,6 +127,11 @@
  #endif
 #endif
 
+// Fix for versions of ROBOTC earlier than 4.26
+#if kRobotCVersionNumeric < 426
+#define tmotorVex393TurboSpeed_HBridge   9998
+#define tmotorVex393TurboSpeed_MC29      9999
+#endif
 
 // ROBOTC with PID changed motor definitions - I used to use version number
 // but 3.60 broke that and we don't know what version it will be now
