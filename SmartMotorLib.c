@@ -38,6 +38,8 @@
 /*                      quickly.                                               */
 /*               V1.06  3 Sept 2014                                            */
 /*                      Added support for the 393 Turbo Gears and ROBOTC V4.26 */
+/*               V1.07  17 April 2016                                          */
+/*                      Allow motor control disable using a slew rate of 0     */
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*    The author is supplying this software for use with the VEX cortex        */
@@ -109,8 +111,8 @@
 #ifndef __SMARTMOTORLIB__
 #define __SMARTMOTORLIB__
 
-// Version 1.05
-#define kSmartMotorLibVersion   106
+// Version 1.07
+#define kSmartMotorLibVersion   107
 
 // We make extensive use of pointers so need recent versions of ROBOTC
 #include "FirmwareVersion.h"
@@ -545,8 +547,9 @@ SmartMotorSetSlewRate( tMotor index, int slew_rate = 10 )
     if((index < 0) || (index >= kNumbOfRealMotors))
         return;
 
-    // negative or 0 is invalid
-    if( slew_rate <= 0 )
+    // negative is invalid
+    // 0 is used to disable SM control of this motor
+    if( slew_rate < 0 )
         return;
 
     sMotors[ index ].motor_slew = slew_rate;
@@ -993,6 +996,10 @@ SmartMotorsInit()
         m->limit_tripped = false;
         m->ptc_tripped   = false;
         m->limit_cmd     = SMLIB_MOTOR_MAX_CMD_UNDEFINED;
+        
+        // init slew rate so we can override after calling SmartMotorsInit
+        // we now use motor_slew as a disable if it is 0
+        m->motor_slew    = SMLIB_MOTOR_DEFAULT_SLEW_RATE;
 
         // maximum theoretical v_bemf
         m->v_bemf_max = m->ke_motor * m->rpm_free;
@@ -1806,7 +1813,7 @@ task SmartMotorSlewRateTask()
         m = _SmartMotorGetPtr( motorIndex );
         m->motor_req  = 0;
         m->motor_cmd  = 0;
-        m->motor_slew = SMLIB_MOTOR_DEFAULT_SLEW_RATE;
+        //m->motor_slew = SMLIB_MOTOR_DEFAULT_SLEW_RATE;
         }
 
     // run task until stopped
@@ -1821,6 +1828,10 @@ task SmartMotorSlewRateTask()
             {
             m = _SmartMotorGetPtr( motorIndex );
 
+            // if 0 then we skip, motor is disabled from control
+            if( m->motor_slew == 0 )
+                continue;
+              
             // So we don't keep accessing the internal storage
             motorTmp = motor[ m->port ];
 
