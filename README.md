@@ -45,6 +45,11 @@ A ROBOTC Library for the VEX cortex.
 /*                      quickly.                                               */
 /*               V1.06  3 Sept 2014                                            */
 /*                      Added support for the 393 Turbo Gears and ROBOTC V4.26 */
+/*               V1.07  17 April 2016                                          */
+/*                      Allow motor control disable using a slew rate of 0     */
+/*               V1.08  8 May 2016                                             */
+/*                      Change function calls to be compatible with V4.XX      */
+/*                      Add _NO_WARNING macro                                  */
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*    The author is supplying this software for use with the VEX cortex        */

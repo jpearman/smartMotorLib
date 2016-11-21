@@ -40,6 +40,9 @@
 /*                      Added support for the 393 Turbo Gears and ROBOTC V4.26 */
 /*               V1.07  17 April 2016                                          */
 /*                      Allow motor control disable using a slew rate of 0     */
+/*               V1.08  8 May 2016                                             */
+/*                      Change function calls to be compatible with V4.XX      */
+/*                      Add _NO_WARNING macro                                  */
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*    The author is supplying this software for use with the VEX cortex        */
@@ -111,8 +114,8 @@
 #ifndef __SMARTMOTORLIB__
 #define __SMARTMOTORLIB__
 
-// Version 1.07
-#define kSmartMotorLibVersion   107
+// Version 1.08
+#define kSmartMotorLibVersion   108
 
 // We make extensive use of pointers so need recent versions of ROBOTC
 #include "FirmwareVersion.h"
@@ -142,6 +145,20 @@
 #define kRobotCHasPid
 #endif
 
+// We switched default names for V4.XX
+// this keeps V3.XX happy even though not supported anymore
+#if kRobotCVersionNumeric < 400
+#define startTask           StartTask
+#define stopTask            StopTask
+#define semaphoreInitialize SemaphoreInitialize
+#define semaphoreLock       SemaphoreLock
+#define semaphoreUnlock     SemaphoreUnlock
+#endif
+
+// Stop compiler warning about unreferenced procedure
+#ifndef _NO_WARNING
+#define _NO_WARNING(x)    if(false)do{x}while(0)
+#endif
 
 // System parameters - don't change
 #define SMLIB_R_SYS             0.3
@@ -417,6 +434,8 @@ void    SmartMotorUserDebug( smartMotor *m );
 smartMotor *
 SmartMotorGetPtr( tMotor index )
 {
+    _NO_WARNING( SmartMotorGetPtr(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return( NULL );
@@ -432,6 +451,8 @@ SmartMotorGetPtr( tMotor index )
 smartController *
 SmartMotorControllerGetPtr( short index )
 {
+    _NO_WARNING( SmartMotorControllerGetPtr(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return( NULL );
@@ -446,6 +467,8 @@ SmartMotorControllerGetPtr( short index )
 float
 SmartMotorGetSpeed( tMotor index )
 {
+    _NO_WARNING( SmartMotorGetSpeed(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return( 0 );
@@ -460,6 +483,8 @@ SmartMotorGetSpeed( tMotor index )
 float
 SmartMotorGetCurrent( tMotor index, int s = 0 )
 {
+    _NO_WARNING( SmartMotorGetCurrent(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return( 0 );
@@ -478,6 +503,8 @@ SmartMotorGetCurrent( tMotor index, int s = 0 )
 float
 SmartMotorGetTemperature( tMotor index )
 {
+    _NO_WARNING( SmartMotorGetTemperature(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return( 0 );
@@ -492,6 +519,8 @@ SmartMotorGetTemperature( tMotor index )
 int
 SmartMotorGetLimitCmd( tMotor index )
 {
+    _NO_WARNING( SmartMotorGetLimitCmd(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return( 0 );
@@ -506,6 +535,8 @@ SmartMotorGetLimitCmd( tMotor index )
 void
 SmartMotorSetLimitCurent( tMotor index, float current = 1.0 )
 {
+    _NO_WARNING( SmartMotorSetLimitCurent(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return;
@@ -520,6 +551,8 @@ SmartMotorSetLimitCurent( tMotor index, float current = 1.0 )
 void
 SmartMotorSetFreeRpm( tMotor index, short max_rpm )
 {
+    _NO_WARNING( SmartMotorSetFreeRpm(0,0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return;
@@ -543,6 +576,8 @@ SmartMotorSetFreeRpm( tMotor index, short max_rpm )
 void
 SmartMotorSetSlewRate( tMotor index, int slew_rate = 10 )
 {
+    _NO_WARNING( SmartMotorSetSlewRate(0); );
+
     // bounds check index
     if((index < 0) || (index >= kNumbOfRealMotors))
         return;
@@ -562,6 +597,8 @@ SmartMotorSetSlewRate( tMotor index, int slew_rate = 10 )
 float
 SmartMotorGetControllerCurrent( short index )
 {
+    _NO_WARNING( SmartMotorGetControllerCurrent(0); );
+
     // bounds check index
     if((index < 0) || (index >= SMLIB_TOTAL_NUM_CONTROL_BANKS))
         return( 0 );
@@ -575,6 +612,8 @@ SmartMotorGetControllerCurrent( short index )
 float
 SmartMotorGetControllerTemperature( short index )
 {
+    _NO_WARNING( SmartMotorGetControllerTemperature(0); );
+
     // bounds check index
     if((index < 0) || (index >= SMLIB_TOTAL_NUM_CONTROL_BANKS))
         return( 0 );
@@ -589,6 +628,8 @@ SmartMotorGetControllerTemperature( short index )
 void
 SmartMotorSetControllerStatusLed( int index, tSensors port )
 {
+    _NO_WARNING( SmartMotorSetControllerStatusLed(0, 0); );
+
     // bounds check index
     if((index < 0) || (index >= SMLIB_TOTAL_NUM_CONTROL_BANKS))
         return;
@@ -609,6 +650,8 @@ SmartMotorSetControllerStatusLed( int index, tSensors port )
 void
 SmartMotorSetPowerExpanderStatusPort( tSensors port )
 {
+    _NO_WARNING( SmartMotorSetPowerExpanderStatusPort(0); );
+
     // if an Analog input then use
     if( SensorType[ port ] == sensorAnalog )
         sPorts[ SMLIB_PWREXP_PORT_0 ].statusPort = port;
@@ -621,6 +664,8 @@ SmartMotorSetPowerExpanderStatusPort( tSensors port )
 void
 SmartMotorPtcMonitorEnable()
 {
+    _NO_WARNING( SmartMotorPtcMonitorEnable(); );
+
     CurrentLimitEnabled = false;
     PtcLimitEnabled     = true;
 }
@@ -642,6 +687,8 @@ SmartMotorPtcMonitorDisable()
 void
 SmartMotorCurrentMonitorEnable()
 {
+    _NO_WARNING( SmartMotorCurrentMonitorEnable(); );
+
     PtcLimitEnabled     = false;
     CurrentLimitEnabled = true;
 }
@@ -667,12 +714,12 @@ void
 SmartMotorRun()
 {
     // Higher priority than slew rate task
-    StartTask( SmartMotorTask , 100 );
+    startTask( SmartMotorTask , 100 );
     // Higher priority than most user tasks
-    StartTask( SmartMotorSlewRateTask, 99 );
+    startTask( SmartMotorSlewRateTask, 99 );
 
     // Initialize resource semaphore
-    SemaphoreInitialize(MotorSemaphore);
+    semaphoreInitialize(MotorSemaphore);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -682,11 +729,13 @@ SmartMotorRun()
 void
 SmartMotorStop()
 {
+    _NO_WARNING( SmartMotorStop(); );
+
     SmartMotorPtcMonitorDisable();
     SmartMotorCurrentMonitorDisable();
 
-    StopTask( SmartMotorTask );
-    StopTask( SmartMotorSlewRateTask );
+    stopTask( SmartMotorTask );
+    stopTask( SmartMotorSlewRateTask );
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -699,6 +748,8 @@ SmartMotorDebugStatus()
     short   i, j;
     smartMotor      *m;
     smartController *s;
+
+    _NO_WARNING( SmartMotorDebugStatus(); );
 
     // Cortext ports 1 - 5
 
@@ -780,17 +831,21 @@ SetMotor( int index, int value = 0, bool immeadiate = false )
 void
 MotorLibInit()
 {
+    _NO_WARNING( MotorLibInit(); );
+
     SmartMotorStop();
-    StartTask( SmartMotorSlewRateTask );
+    startTask( SmartMotorSlewRateTask );
 
     // Initialize resource semaphore
-    SemaphoreInitialize(MotorSemaphore);
+    semaphoreInitialize(MotorSemaphore);
 }
 
 int
 MotorGetSemaphore()
 {
-    SemaphoreLock( MotorSemaphore, 2);
+    _NO_WARNING( MotorGetSemaphore(); );
+
+    semaphoreLock( MotorSemaphore, 2);
 
     short s = getSemaphoreTaskOwner(MotorSemaphore);
 
@@ -803,9 +858,11 @@ MotorGetSemaphore()
 void
 MotorReleaseSemaphore()
 {
+    _NO_WARNING( MotorReleaseSemaphore(); );
+
     short s = getSemaphoreTaskOwner(MotorSemaphore);
     if ( s == nCurrentTask )
-        SemaphoreUnlock(MotorSemaphore);
+        semaphoreUnlock(MotorSemaphore);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -996,7 +1053,7 @@ SmartMotorsInit()
         m->limit_tripped = false;
         m->ptc_tripped   = false;
         m->limit_cmd     = SMLIB_MOTOR_MAX_CMD_UNDEFINED;
-        
+
         // init slew rate so we can override after calling SmartMotorsInit
         // we now use motor_slew as a disable if it is 0
         m->motor_slew    = SMLIB_MOTOR_DEFAULT_SLEW_RATE;
@@ -1036,6 +1093,8 @@ SmartMotorsInit()
 void
 SmartMotorLinkMotors( tMotor master, tMotor slave )
 {
+    _NO_WARNING( SmartMotorLinkMotors(0, 0); );
+
     // bounds check master
     if((master < 0) || (master >= kNumbOfRealMotors))
         return;
@@ -1074,6 +1133,8 @@ SmartMotorLinkMotors( tMotor master, tMotor slave )
 void
 SmartMotorsSetEncoderGearing( tMotor index, float ratio )
 {
+    _NO_WARNING( SmartMotorsSetEncoderGearing(0, 0); );
+
     // bounds check master
     if((index < 0) || (index >= kNumbOfRealMotors))
         return;
@@ -1098,6 +1159,8 @@ SmartMotorsAddPowerExtender( int p0, int p1 = (-1), int p2 = (-1), int p3 = (-1)
     int     i;
     int     p = 0;
     smartMotor  *m;
+
+     _NO_WARNING( SmartMotorsAddPowerExtender(0); );
 
     for(i=0;i<kNumbOfRealMotors;i++)
         {
@@ -1139,6 +1202,8 @@ SmartMotorsAddPowerExtender( int p0, int p1 = (-1), int p2 = (-1), int p3 = (-1)
 void
 SmartMotorSetRpmSensor( tMotor index, tSensors port, float ticks_per_rev, bool reversed = false )
 {
+     _NO_WARNING( SmartMotorSetRpmSensor(0, 0, 0); );
+
     // bounds check master
     if((index < 0) || (index >= kNumbOfRealMotors))
         return;
@@ -1831,7 +1896,7 @@ task SmartMotorSlewRateTask()
             // if 0 then we skip, motor is disabled from control
             if( m->motor_slew == 0 )
                 continue;
-              
+
             // So we don't keep accessing the internal storage
             motorTmp = motor[ m->port ];
 
